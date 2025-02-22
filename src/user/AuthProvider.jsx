@@ -56,37 +56,37 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (loggedInUser) => {
-  //     if (loggedInUser) {
-  //       setUser(loggedInUser);
-  //       await fetch("https://pp-wine.vercel.app/users", {
-  //         method: "PUT",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({
-  //           uid: loggedInUser.uid,
-  //           name: loggedInUser.displayName,
-  //           email: loggedInUser.email,
-  //           photoURL: loggedInUser.photoURL,
-  //         }),
-  //       });
-  //     } else {
-  //       setUser(null);
-  //     }
-  //     setLoading(false);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, (curentUser) => {
-      setUser(curentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (loggedInUser) => {
+      if (loggedInUser) {
+        setUser(loggedInUser);
+        await fetch("https://pp-wine.vercel.app/users", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: loggedInUser.uid,
+            name: loggedInUser.displayName,
+            email: loggedInUser.email,
+            photoURL: loggedInUser.photoURL,
+          }),
+        });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
-    return () => {
-      unSubscribe();
-    };
+
+    return () => unsubscribe();
   }, []);
+  // useEffect(() => {
+  //   const unSubscribe = onAuthStateChanged(auth, (curentUser) => {
+  //     setUser(curentUser);
+  //     setLoading(false);
+  //   });
+  //   return () => {
+  //     unSubscribe();
+  //   };
+  // }, []);
 
   return (
     <AuthContext.Provider
