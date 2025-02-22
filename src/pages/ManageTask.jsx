@@ -13,7 +13,7 @@ export default function ManageTask() {
 
   // Fetch tasks from the backend on component mount
   useEffect(() => {
-    fetch("http://localhost:5000/tasks")
+    fetch("https://pp-wine.vercel.app/tasks")
       .then((response) => response.json())
       .then((data) => {
         setTasks(data);
@@ -29,7 +29,7 @@ export default function ManageTask() {
   // Handle Delete Task
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/tasks/${id}`);
+      await axios.delete(`https://pp-wine.vercel.app/tasks/${id}`);
       setTasks(tasks.filter((task) => task._id !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -56,7 +56,7 @@ export default function ManageTask() {
       };
 
       const response = await axios.put(
-        `http://localhost:5000/tasks/${editingTask._id}`,
+        `https://pp-wine.vercel.app/tasks/${editingTask._id}`,
         updatedTaskData
       );
 

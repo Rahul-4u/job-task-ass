@@ -1,5 +1,7 @@
 import {
   GoogleAuthProvider,
+  signInWithRedirect, // ✅ Redirect method
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
   signOut,
@@ -17,22 +19,27 @@ export default function AuthProvider({ children }) {
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
+      // Netlify popup issue হলে Redirect use করো
+      if (window.innerWidth < 768) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        const result = await signInWithPopup(auth, provider);
+        setUser(result.user);
 
-      // ✅ Send user data to backend
-      await fetch("http://localhost:5000/users", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: result.user.uid,
-          name: result.user.displayName,
-          email: result.user.email,
-          photoURL: result.user.photoURL,
-        }),
-      });
+        // ✅ Backend এ User Data পাঠানো
+        await fetch("https://pp-wine.vercel.app/users", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: result.user.uid,
+            name: result.user.displayName,
+            email: result.user.email,
+            photoURL: result.user.photoURL,
+          }),
+        });
 
-      console.log("User logged in:", result.user);
+        console.log("User logged in:", result.user);
+      }
     } catch (error) {
       console.error("Google Login Error:", error);
     } finally {
@@ -49,27 +56,36 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (loggedInUser) => {
+  //     if (loggedInUser) {
+  //       setUser(loggedInUser);
+  //       await fetch("https://pp-wine.vercel.app/users", {
+  //         method: "PUT",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           uid: loggedInUser.uid,
+  //           name: loggedInUser.displayName,
+  //           email: loggedInUser.email,
+  //           photoURL: loggedInUser.photoURL,
+  //         }),
+  //       });
+  //     } else {
+  //       setUser(null);
+  //     }
+  //     setLoading(false);
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (loggedInUser) => {
-      if (loggedInUser) {
-        setUser(loggedInUser);
-        await fetch("http://localhost:5000/users", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: loggedInUser.uid,
-            name: loggedInUser.displayName,
-            email: loggedInUser.email,
-            photoURL: loggedInUser.photoURL,
-          }),
-        });
-      } else {
-        setUser(null);
-      }
+    const unSubscribe = onAuthStateChanged(auth, (curentUser) => {
+      setUser(curentUser);
       setLoading(false);
     });
-
-    return () => unsubscribe();
+    return () => {
+      unSubscribe();
+    };
   }, []);
 
   return (

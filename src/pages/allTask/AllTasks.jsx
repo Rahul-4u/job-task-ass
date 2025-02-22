@@ -8,7 +8,7 @@ const AllTasks = () => {
   // ✅ Fetch tasks from backend
   useEffect(() => {
     axios
-      .get("http://localhost:5000/tasks")
+      .get("https://pp-wine.vercel.app/tasks")
       .then((response) => {
         if (Array.isArray(response.data)) {
           console.log("Fetched tasks:", response.data); // Debugging
@@ -43,7 +43,7 @@ const AllTasks = () => {
     try {
       if (movedTask?._id) {
         await axios.put(
-          `http://localhost:5000/tasks/update-category/${movedTask._id}`,
+          `https://pp-wine.vercel.app/tasks/update-category/${movedTask._id}`,
           { category: movedTask.category }
         );
         console.log("✅ Task updated in DB");

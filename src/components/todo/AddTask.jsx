@@ -49,7 +49,7 @@ export default function AddTask() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/add-tasks", {
+      const response = await fetch("https://pp-wine.vercel.app/add-tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
