@@ -16,7 +16,6 @@ const Routes = createBrowserRouter([
         path: "/add-task",
         element: (
           <PrivateRoute>
-            {" "}
             <AddTask />
           </PrivateRoute>
         ),
@@ -29,7 +28,6 @@ const Routes = createBrowserRouter([
         path: "/",
         element: (
           <PrivateRoute>
-            {" "}
             <AllTasks />
           </PrivateRoute>
         ),
@@ -38,7 +36,6 @@ const Routes = createBrowserRouter([
         path: "/manage-task",
         element: (
           <PrivateRoute>
-            {" "}
             <ManageTask />
           </PrivateRoute>
         ),

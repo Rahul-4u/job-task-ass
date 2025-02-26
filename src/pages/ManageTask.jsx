@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Optional: For API calls, can be replaced with fetch
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function ManageTask() {
   const [tasks, setTasks] = useState([]);
@@ -26,16 +28,38 @@ export default function ManageTask() {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Handle Delete Task
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`https://pp-wine.vercel.app/tasks/${id}`);
-      setTasks(tasks.filter((task) => task._id !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this task!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`https://pp-wine.vercel.app/tasks/${id}`);
+          setTasks(tasks.filter((task) => task._id !== id));
 
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your task has been deleted successfully.",
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Error deleting task:", error);
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to delete the task.",
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
   // Handle Edit Task
   const handleEdit = (task) => {
     setEditingTask(task);
@@ -68,7 +92,8 @@ export default function ManageTask() {
               : task
           )
         );
-        setEditingTask(null); // Close the edit form
+        toast.success("update success");
+        setEditingTask(null);
       }
     } catch (error) {
       console.error("Error updating task:", error);

@@ -1,35 +1,14 @@
-import React, { useState } from "react";
-
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 export default function AddTask() {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("To-Do");
 
-  //   const handleSubmit = (e) => {
-  //     e.preventDefault();
-  //     if (title.trim() === "" || title.length > 50) {
-  //       alert("Title is required and must be under 50 characters.");
-  //       return;
-  //     }
-  //     if (description.length > 200) {
-  //       alert("Description must be under 200 characters.");
-  //       return;
-  //     }
-
-  //     const newTask = {
-  //       title,
-  //       description,
-  //       category,
-  //       timestamp: new Date().toISOString(),
-  //     };
-
-  //     console.log("Task added:", newTask);
-  //     // API call to save task in the database will go here
-
-  //     setTitle("");
-  //     setDescription("");
-  //     setCategory("To-Do");
-  //   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim() === "" || title.length > 50) {
@@ -44,6 +23,7 @@ export default function AddTask() {
     const newTask = {
       title,
       description,
+      userEmail: user?.email,
       category,
       timestamp: new Date().toISOString(),
     };
@@ -60,12 +40,15 @@ export default function AddTask() {
       const data = await response.json();
       if (response.ok) {
         console.log("Task added:", data);
-        alert("Task added successfully!");
+        toast.success("Task added successfully!");
+
+        navigate("/");
+
         setTitle("");
         setDescription("");
         setCategory("To-Do");
       } else {
-        alert(data.message || "Failed to add task");
+        toast.error(data.message || "Failed to add task");
       }
     } catch (error) {
       console.error("Error adding task:", error);
